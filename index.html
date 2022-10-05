@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.1/dist/leaflet.css"
+  integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
+  crossorigin=""/>
+  <script src="script.js" type="module" defer></script>
+  </script>
+</head>
+<body>
+  <h1>QUICK WEATHER</h1>
+  <main>
+    <div class="input-container">
+      <div class="search-form">
+        <h1>Search by city name</h1>
+        <label>City name:</label>
+        <input type="text" id="city-name-input">
+        <label>State code:</label>
+        <input type="text" id="state-code-input" placeholder="Optional, for USA only.">
+        <label>Country name:</label>
+        <select id="country-name-dropdown">
+        </select>
+        <button id="search-button">Search</button>
+      </div>
+      <div class="map-search-container">
+        <h1>Search by map location</h1>
+        <div id="map"></div>
+        <button id="search-map-button">Search map</button>
+      </div>
+    </div>
+    <div class="results-container">
+      <header>
+      </header>
+      <img src="svgs/thermometer.svg" alt="Picture of a thermometer" class="result-graphic" id="thermometer-graphic">
+      <p class="temperature-display">
+        Temperature: <span class="result"></span>
+      </p>
+      <img src="svgs/cloud.svg" alt="Picture of a cloud" class="result-graphic" id="cloud-graphic">
+      <p class="cloud-percentage-display">
+        Cloud percentage: <span class="result"></span>
+      </p>
+      <img src="svgs/droplet.svg" alt="Picture of a water droplet" class="result-graphic" id="droplet-graphic">
+      <p class="humidity-display">
+        Humidity percentage: <span class="result"></span>
+      </p>
+      <img src="svgs/wind.svg" alt="Picture of a gust of wind" class="result-graphic" id="wind-graphic">
+      <p class="wind-speed-display">
+        Wind speed: <span class="result"></span>
+      </p>
+      <img src="svgs/lighthouse.svg" alt="Picture of a lighthouse" class="result-graphic" id="lighthouse-graphic">
+      <p class="visibility-display">
+        Visibility (Up to 10,000 metres): <span class="result"></span>
+      </p>
+    </div>
+  </main>
+</body>
+</html>
