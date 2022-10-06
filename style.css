@@ -3,18 +3,32 @@
   src: url('./future\ mood.ttf');
 }
 
+@font-face {
+  font-family: big-noodle;
+  src: url('MavenPro-Regular.ttf');
+}
+
+:root {
+  --bright-pink: rgb(226, 57, 139);
+  --hover-expansion-duration: 0.2s;
+}
+
 * {
   padding: 0;
   margin: 0;
 }
 
 body {
-  font-family: future-mood, 'Courier New', Courier, monospace;
-  color: rgb(58, 30, 87);
   padding: 10px;
 }
 
-body > h1 {
+body, button {
+  font-family: big-noodle, 'Courier New', Courier, monospace;
+  color: rgb(58, 30, 87);
+}
+
+.title {
+  font-family: future-mood, 'Courier New', Courier, monospace;
   color: rgb(255, 255, 255);
   font-size: 2rem;
   font-style: italic;
@@ -22,6 +36,18 @@ body > h1 {
   1px -1px 0 #000,
   -1px 1px 0 cadetblue,
   1px 1px 0 #000;;
+}
+
+.title, button {
+  transition: color var(--hover-expansion-duration), 
+    letter-spacing var(--hover-expansion-duration);
+}
+
+.title:hover, button:hover {
+  color: var(--bright-pink);
+  letter-spacing: 0.3ch;
+  transition: color var(--hover-expansion-duration), 
+    letter-spacing var(--hover-expansion-duration);
 }
 
 main {
@@ -34,9 +60,10 @@ main {
   grid-column: 1 / -1;
 }
 
-main h1, header {
+h1, header {
   font-weight: 900;
   font-size: 1.5rem;
+  letter-spacing: 3px;
 }
 
 .search-form {
@@ -46,6 +73,15 @@ main h1, header {
   margin-bottom: 40px;
   border: 5px dashed rgb(59, 229, 212);
   padding: 10px;
+}
+
+#search-button {
+  width: max-content;
+  height: min-content;
+}
+
+.error-display {
+  color: rgb(128, 0, 62)
 }
 
 .map-search-container {
@@ -70,25 +106,37 @@ main h1, header {
 
 #map { 
   height: 400px; 
-  width: 400px;
-  border: 5px dotted violet;
+  width: auto;
+  border: 5px dotted rgb(29, 220, 220);
   margin-bottom: 10px;
 }
 
 button {
-  padding: 3px;
+  color: rgb(58, 30, 87); 
+  padding: 3px 10px;
   border: 1px solid rgb(187, 209, 255);
   border-radius: 30px;
   background-color: aliceblue;
 }
 
+input, select {
+  border-radius: 5px;
+  border: 1px solid rebeccapurple;
+  padding: 2px;
+  background-color: white;
+}
+
+input:focus {
+  outline: 1px solid rebeccapurple;
+}
+
 .loading {
-  animation: 0.1s infinite alternate loading;
+  animation: 0.2s infinite alternate loading;
 }
 
 @keyframes loading {
   from {
-    background-color: cornflowerblue;
+    background-color: aliceblue;
     padding: 3px 5px;
   }
 

@@ -29,7 +29,6 @@ function kelvinToCelsius(degreesKelvin) {
   return degreesKelvin - 273.15;
 }
 
-const resultsContainer = document.querySelector('.results-container');
 const [cityNameInput, stateCodeInput, countryNameDropdown, searchButton, searchMapButton] = 
   ['city-name-input', 'state-code-input', 'country-name-dropdown', 'search-button', 'search-map-button']
   .map((id) => document.querySelector(`#${id}`));
@@ -60,37 +59,67 @@ function processOpenWeatherMapResponse(response) {
   return processedResponse;
 }
 
+const [
+  errorDisplay,
+  resultsContainerHeader, 
+  temperatureResult, 
+  cloudPercentageResult, 
+  humidityPercentageResult, 
+  windSpeedResult, 
+  visibilityResult
+] = [
+  '.error-display',
+  '.results-container header',
+  '.temperature-display .result',
+  '.cloud-percentage-display .result',
+  '.humidity-display .result',
+  '.wind-speed-display .result',
+  '.visibility-display .result',
+]
+.map((selector) => document.querySelector(selector));
+
 function displayProcessedResponse(processedResponse) {
-  resultsContainer.textContent = '';
-  for (const key in processedResponse) {
-    resultsContainer.textContent += `${key}: ${processedResponse[key]}, `;
-  }
-  resultsContainer.textContent = resultsContainer.textContent.slice(0,-2);
+  resultsContainerHeader.textContent = `Current weather in ${processedResponse.cityName}, ${processedResponse.countryName}: 
+  ${capitalizeFirstLetter(processedResponse.description)}.`;
+  temperatureResult.textContent = roundTemperature(processedResponse.temperatureInCelsius) + '˚C';
+  cloudPercentageResult.textContent = processedResponse.cloudPercentage + '%';
+  humidityPercentageResult.textContent = processedResponse.humidityPercentage + '%';
+  windSpeedResult.textContent = processedResponse.windSpeedInMilesPerHour + ' miles per hour';
+  visibilityResult.textContent = processedResponse.visibilityInMeters + ' metres';
 }
 
 searchButton.onclick = async () => {
   searchButton.classList.add('loading');
+  errorDisplay.textContent = 'Loading results...';
   const inputSearchData = getInputSearchData();
   const response = await queryOpenWeatherMap(inputSearchData);
   searchButton.classList.remove('loading');
   if (response.cod === "404") {
-    return console.log(response.message);
+    return displayErrorMessage('No city with that name found.');
   }
   const processedResponse = processOpenWeatherMapResponse(response);
   map.flyTo(processedResponse.latLong);
-  setMarker(processedResponse.latLong);
+  moveMarker(processedResponse.latLong);
   if (inputSearchData.countryName !== processedResponse.countryName) {
-    console.log(`No city with the name ${processedResponse.cityName} found in ${inputSearchData.countryName}, but we found one in ${processedResponse.countryName}!`)
+    displayErrorMessage(`No city with the name ${processedResponse.cityName} found in ${inputSearchData.countryName}, but we found one in ${processedResponse.countryName}!`)
   }
-  console.log(response, processedResponse);
+  else clearErrorDisplay();
   displayProcessedResponse(processedResponse);
 };
+
+function displayErrorMessage(message) {
+  errorDisplay.textContent = message;
+}
+
+function clearErrorDisplay() {
+  displayErrorMessage('');
+}
 
 function createMarker(latLong) {
   return L.marker(latLong, {draggable: true});
 }
 
-function setMarker(latLong) {
+function moveMarker(latLong) {
   currentMarker.remove();
   currentMarker = createMarker(latLong);
   currentMarker.addTo(map);
@@ -108,7 +137,7 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 })
 .addTo(map);
 
-map.on('click', (e) => setMarker(e.latlng));
+map.on('click', (e) => moveMarker(e.latlng));
 
 function toOneDecimalPlace(number) {
   const numberString = '' + number;
@@ -124,17 +153,12 @@ function capitalizeFirstLetter(string) {
 }
 
 searchMapButton.onclick = async () => {
+  clearErrorDisplay();
   searchMapButton.classList.add('loading');
   const latLong = currentMarker.getLatLng();
   const response = await queryOpenWeatherMapByCoordinates(latLong);
   searchMapButton.classList.remove('loading');
   map.flyTo(latLong);
   const processedResponse = processOpenWeatherMapResponse(response);
-  console.log(processedResponse.description);
-  document.querySelector('.results-container header').textContent = `Current weather in ${processedResponse.cityName}, ${processedResponse.countryName}: ${capitalizeFirstLetter(processedResponse.description)}.`;
-  document.querySelector('.temperature-display .result').textContent = roundTemperature(processedResponse.temperatureInCelsius) + '˚C';
-  document.querySelector('.cloud-percentage-display .result').textContent = processedResponse.cloudPercentage + '%';
-  document.querySelector('.humidity-display .result').textContent = processedResponse.humidityPercentage + '%';
-  document.querySelector('.wind-speed-display .result').textContent = processedResponse.windSpeedInMilesPerHour + ' miles per hour';
-  document.querySelector('.visibility-display .result').textContent = processedResponse.visibilityInMeters + ' metres';
+  displayProcessedResponse(processedResponse);
 };
