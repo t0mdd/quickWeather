@@ -17,26 +17,6 @@ async function queryOpenWeatherMapByCoordinates(latLong){
   return await queryApiForResponse(fetchURL);
 }
 
-function getInputSearchData() {
-  return {
-    cityName: cityNameInput.value,
-    stateCode: stateCodeInput.value,
-    countryName: countryNameDropdown.value,
-  };
-}
-
-function kelvinToCelsius(degreesKelvin) {
-  return degreesKelvin - 273.15;
-}
-
-const [cityNameInput, stateCodeInput, countryNameDropdown, searchButton, searchMapButton] = 
-  ['city-name-input', 'state-code-input', 'country-name-dropdown', 'search-button', 'search-map-button']
-  .map((id) => document.querySelector(`#${id}`));
-
-for (const code in codeToCountry) {
-  countryNameDropdown.innerHTML += `<option>${codeToCountry[code]}</option>`;
-}
-
 function processOpenWeatherMapResponse(response) {
   const processedResponse = {
     cityName: response.name,
@@ -59,6 +39,46 @@ function processOpenWeatherMapResponse(response) {
   return processedResponse;
 }
 
+function getInputSearchData() {
+  return {
+    cityName: cityNameInput.value,
+    stateCode: stateCodeInput.value,
+    countryName: countryNameDropdown.value,
+  };
+}
+
+function kelvinToCelsius(degreesKelvin) {
+  return degreesKelvin - 273.15;
+}
+
+function toOneDecimalPlace(number) {
+  const numberString = '' + number;
+  const indexOfDecimalPoint = numberString.indexOf('.');
+  if (indexOfDecimalPoint === -1) return numberString + '.0';
+  return numberString.slice(0, indexOfDecimalPoint + 2);
+}
+
+function capitalizeFirstLetter(string) {
+  return string[0].toUpperCase() + string.slice(1);
+}
+
+const roundTemperature = toOneDecimalPlace;
+
+const [
+  cityNameInput, 
+  stateCodeInput, 
+  countryNameDropdown, 
+  searchButton, 
+  searchMapButton
+] = [
+  'city-name-input', 
+  'state-code-input', 
+  'country-name-dropdown', 
+  'search-button', 
+  'search-map-button'
+]
+.map((id) => document.querySelector(`#${id}`));
+
 const [
   errorDisplay,
   resultsContainerHeader, 
@@ -77,6 +97,14 @@ const [
   '.visibility-display .result',
 ]
 .map((selector) => document.querySelector(selector));
+
+function displayErrorMessage(message) {
+  errorDisplay.textContent = message;
+}
+
+function clearErrorDisplay() {
+  displayErrorMessage('');
+}
 
 function displayProcessedResponse(processedResponse) {
   resultsContainerHeader.textContent = `Current weather in ${processedResponse.cityName}, ${processedResponse.countryName}: 
@@ -107,14 +135,6 @@ searchButton.onclick = async () => {
   displayProcessedResponse(processedResponse);
 };
 
-function displayErrorMessage(message) {
-  errorDisplay.textContent = message;
-}
-
-function clearErrorDisplay() {
-  displayErrorMessage('');
-}
-
 function createMarker(latLong) {
   return L.marker(latLong, {draggable: true});
 }
@@ -139,19 +159,6 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 map.on('click', (e) => moveMarker(e.latlng));
 
-function toOneDecimalPlace(number) {
-  const numberString = '' + number;
-  const indexOfDecimalPoint = numberString.indexOf('.');
-  if (indexOfDecimalPoint === -1) return numberString + '.0';
-  return numberString.slice(0, indexOfDecimalPoint + 2);
-}
-
-const roundTemperature = toOneDecimalPlace;
-
-function capitalizeFirstLetter(string) {
-  return string[0].toUpperCase() + string.slice(1);
-}
-
 searchMapButton.onclick = async () => {
   clearErrorDisplay();
   searchMapButton.classList.add('loading');
@@ -162,3 +169,7 @@ searchMapButton.onclick = async () => {
   const processedResponse = processOpenWeatherMapResponse(response);
   displayProcessedResponse(processedResponse);
 };
+
+for (const code in codeToCountry) {
+  countryNameDropdown.innerHTML += `<option>${codeToCountry[code]}</option>`;
+}
