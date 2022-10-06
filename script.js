@@ -6,8 +6,7 @@ async function queryApiForResponse(fetchURL) {
   return responseObj.json();
 }
 
-async function queryOpenWeatherMap(locationData){
-  const { cityName, stateCode, countryName } = locationData;
+async function queryOpenWeatherMap({cityName, stateCode, countryName}){
   const fetchURL = `https://api.openweathermap.org/data/2.5/weather?q=${cityName},${stateCode},${countryToCode[countryName]}&APPID=3edd8141886d125035aff03b0475978e`;
   return await queryApiForResponse(fetchURL);
 }
@@ -106,20 +105,26 @@ function clearErrorDisplay() {
   displayErrorMessage('');
 }
 
-function displayProcessedResponse(processedResponse) {
-  resultsContainerHeader.textContent = `Current weather in ${processedResponse.cityName}, ${processedResponse.countryName}: 
-  ${capitalizeFirstLetter(processedResponse.description)}.`;
-  temperatureResult.textContent = roundTemperature(processedResponse.temperatureInCelsius) + '˚C';
-  cloudPercentageResult.textContent = processedResponse.cloudPercentage + '%';
-  humidityPercentageResult.textContent = processedResponse.humidityPercentage + '%';
-  windSpeedResult.textContent = processedResponse.windSpeedInMilesPerHour + ' miles per hour';
-  visibilityResult.textContent = processedResponse.visibilityInMeters + ' metres';
+function displayProcessedResponse({cityName, countryName, description, temperatureInCelsius, 
+  cloudPercentage, humidityPercentage, windSpeedInMilesPerHour, visibilityInMeters}) {
+  console.log(!!cityName, !!countryName);
+  resultsContainerHeader.textContent = `Current weather in 
+    ${(cityName && countryName) ? `${cityName}, ${countryName}` : 'your selected location'}: 
+    ${capitalizeFirstLetter(description)}`;
+  temperatureResult.textContent = roundTemperature(temperatureInCelsius) + '˚C';
+  cloudPercentageResult.textContent = cloudPercentage + '%';
+  humidityPercentageResult.textContent = humidityPercentage + '%';
+  windSpeedResult.textContent = windSpeedInMilesPerHour + ' miles per hour';
+  visibilityResult.textContent = visibilityInMeters + ' metres';
 }
 
 searchButton.onclick = async () => {
+  const inputSearchData = getInputSearchData();
+  if (inputSearchData.cityName === '') {
+    return displayErrorMessage('Please enter a city name.')
+  }
   searchButton.classList.add('loading');
   errorDisplay.textContent = 'Loading results...';
-  const inputSearchData = getInputSearchData();
   const response = await queryOpenWeatherMap(inputSearchData);
   searchButton.classList.remove('loading');
   if (response.cod === "404") {

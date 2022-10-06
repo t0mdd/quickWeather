@@ -138,12 +138,10 @@ input:focus {
 @keyframes loading {
   from {
     background-color: aliceblue;
-    padding: 3px 5px;
   }
 
   to {
     background-color: hotpink;
-    padding: 3px 10px;
   }
 }
 
